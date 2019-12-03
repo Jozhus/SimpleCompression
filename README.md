@@ -1,2 +1,4 @@
 # SimpleCompression
-Compresses an array of integers
+Compresses an array of integers.
+
+2019
