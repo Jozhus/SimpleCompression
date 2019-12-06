@@ -13,9 +13,33 @@ def findPatterns(a):
                 else:
                     key = 'p' + str(len(patterns))
                     patterns[key] = search
-                    return ' '.join(a).replace(' '.join(search), key).split(' ')
+                    return replace(a, search, [key])
     return a
     
+def replace(arr, search, replace):
+    for x in range(len(arr) - len(search) + 1):
+        if (arr[x:x + len(search)] == search):
+            arr = arr[0:x] + replace + arr[x + len(search):]
+    return arr
+
+def findRepeats(a):
+    lastel = tuple()
+    replaces = 0
+    for i, x in enumerate(a):
+        if (lastel and lastel[0] == x):
+            lastel = (x, lastel[1], lastel[2] + 1)
+        else:
+            if (lastel and lastel[2] > 2):
+                key = 'p' + str(len(patterns))
+                patterns[key] = [lastel[0]] * lastel[2]
+                a = a[0:lastel[1]] + [key] + a[lastel[1] + lastel[2]:]
+                replaces += lastel[2] - 1
+            lastel = (x, i - replaces, 1)
+    if (lastel and lastel[2] > 2):
+        key = 'p' + str(len(patterns))
+        patterns[key] = [lastel[0]] * lastel[2]
+        a = a[0:lastel[1]] + [key] + a[lastel[1] + lastel[2]:]
+    return a
 
 def compress(a):
     print("Input:\n", a)
@@ -25,6 +49,7 @@ def compress(a):
 
     while (a != origa):
         origa = [x for x in a]
+        a = findRepeats(a)
         a = findPatterns(a)
         if (a != origa):
             newPattern = True
@@ -44,9 +69,8 @@ def compress(a):
     return a
 
 def extract(a):
-    a = ' '.join(a)
-    while('p' in a):
+    while('p' in ' '.join(a)):
         for key in patterns:
-            a = a.replace(key, ' '.join(patterns[key]))
-    return [int(x) for x in a.split(' ')]
+            a = replace(a, [key], patterns[key])
+    return [int(x) for x in a]
             
