@@ -1,5 +1,6 @@
 test = [1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 4, 5]
 patterns = dict()
+repeats = dict()
 
 def findPatterns(a):
     i = len(a) // 2
@@ -11,8 +12,11 @@ def findPatterns(a):
                 if search not in potential:
                     potential += [search]
                 else:
-                    key = 'p' + str(len(patterns))
-                    patterns[key] = search
+                    if (search in patterns.values()):
+                        key = list(patterns.keys())[list(patterns.values()).index(search)]
+                    else:
+                        key = 'p' + str(len(patterns))
+                        patterns[key] = search
                     return replace(a, search, [key])
     return a
     
@@ -30,14 +34,22 @@ def findRepeats(a):
             lastel = (x, lastel[1], lastel[2] + 1)
         else:
             if (lastel and lastel[2] > 2):
-                key = 'p' + str(len(patterns))
-                patterns[key] = [lastel[0]] * lastel[2]
+                value = (lastel[0], lastel[2])
+                if (value in repeats.values()):
+                    key = list(repeats.keys())[list(repeats.values()).index(value)]
+                else:
+                    key = 's' + str(len(repeats))
+                    repeats[key] = value
                 a = a[0:lastel[1]] + [key] + a[lastel[1] + lastel[2]:]
                 replaces += lastel[2] - 1
             lastel = (x, i - replaces, 1)
     if (lastel and lastel[2] > 2):
-        key = 'p' + str(len(patterns))
-        patterns[key] = [lastel[0]] * lastel[2]
+        value = (lastel[0], lastel[2])
+        if (value in repeats.values()):
+            key = list(repeats.keys())[list(repeats.values()).index(value)]
+        else:
+            key = 's' + str(len(repeats))
+            repeats[key] = value
         a = a[0:lastel[1]] + [key] + a[lastel[1] + lastel[2]:]
     return a
 
@@ -63,14 +75,16 @@ def compress(a):
                 patterns[key] = findPatterns(patterns[key])
                 if (patterns[key] != origp):
                     newPattern = True
-    print("Output:")
-    print(a)
-    print(patterns)
+    print("Output:\n", a)
+    #print(patterns)
+    #print(repeats)
     return a
 
 def extract(a):
-    while('p' in ' '.join(a)):
+    while('p' in ' '.join(a) or 's' in ' '.join(a)):
         for key in patterns:
             a = replace(a, [key], patterns[key])
+        for key in repeats:
+            a = replace(a, [key], [repeats[key][0]] * repeats[key][1])
     return [int(x) for x in a]
             
