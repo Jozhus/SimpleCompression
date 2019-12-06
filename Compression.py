@@ -57,6 +57,7 @@ def compress(a):
     print("Input:\n", a)
     a = [str(x) for x in a]
     newPattern = False
+    origlength = len(a)
     origa = []
 
     while (a != origa):
@@ -76,6 +77,7 @@ def compress(a):
                 if (patterns[key] != origp):
                     newPattern = True
     print("Output:\n", a)
+    print("Compressed by " + str(100 * (1 - (len(a) + len(patterns) + len(repeats)) / origlength)) + '%')
     #print(patterns)
     #print(repeats)
     return a
